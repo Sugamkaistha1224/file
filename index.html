@@ -2,6 +2,10 @@
 <html>
 <head>
 	<meta charset="utf-8">
+	<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">
 		* {
@@ -786,20 +790,24 @@
 
 <script type="text/javascript">
     // Function to generate the shareable link
-    function generateShareLink() {
-      // Retrieve the list of uploaded files from localStorage
-      const uploadedFiles = JSON.parse(localStorage.getItem('uploadedFiles')) || [];
-      
-      if (uploadedFiles.length === 0) {
-        alert('No files uploaded to share.');
-        return;
-      }
 
-      const fileLinks = uploadedFiles.map(file => `file=${encodeURIComponent(file.url)}&name=${encodeURIComponent(file.name)}`).join('&');
-      const shareableLink = window.location.href.split('?')[0] + '?share=true&' + fileLinks;
+function generateShareLink() {
+  const uploadedFiles = JSON.parse(localStorage.getItem('uploadedFiles')) || [];
 
-      prompt('Share this link with others to download your files:', shareableLink);
-    }
+  if (uploadedFiles.length === 0) {
+    alert('No files uploaded.');
+    return;
+  }
+
+  const fileLinks = uploadedFiles.map(file => `file=${encodeURIComponent(file.url)}&name=${encodeURIComponent(file.name)}`).join('&');
+  const shareableLink = window.location.href.split('?')[0] + '?share=true&' + fileLinks;
+
+  prompt('Share this link or QR Code:', shareableLink);
+  
+  // Optionally generate QR
+  generateQRCode(shareableLink);
+}
+
 
     // On window load, check if the URL contains the 'share' parameter
     window.onload = function() {
@@ -1411,6 +1419,29 @@ window.onload = function() {
   };
 
   uploadBtn.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', async event => {
+  const files = event.target.files;
+  const uploadedFiles = [];
+
+for (const file of files) {
+    const storageRef = storage.ref('uploads/' + file.name);
+    await storageRef.put(file);
+    const url = await storageRef.getDownloadURL();
+    
+    uploadedFiles.push({ name: file.name, url });
+  }
+
+  localStorage.setItem('uploadedFiles', JSON.stringify(uploadedFiles));
+  alert('Files uploaded successfully!');
+});
+
+
+
+
+
+
+
+
 
   fileInput.addEventListener('change', event => {
     const file = event.target.files[0];
