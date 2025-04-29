@@ -751,15 +751,12 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <!-- Firebase App SDK -->
-<button onclick="handleGoogleLogin()">Sign in with Google</button>
-
-<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
 
 <script>
-  // Your Firebase config
+  // Firebase configuration
   const firebaseConfig = {
     apiKey: "AIzaSyD6BWxdK_BZpAH0SMXEIFy1uA7XdwBhddg",
     authDomain: "teleport-b0434.firebaseapp.com",
@@ -771,33 +768,9 @@
   };
 
   // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
+  const app = firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const database = firebase.database();
-
-  // Google Sign-In with Firebase
-  function handleGoogleLogin() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider)
-      .then((result) => {
-        const user = result.user;
-        console.log("Logged in as:", user.email);
-
-        // Save to Realtime Database
-        database.ref('user_logins/' + user.uid).set({
-          email: user.email,
-          displayName: user.displayName,
-          uid: user.uid,
-          timestamp: firebase.database.ServerValue.TIMESTAMP
-        });
-
-        alert("Login successful!");
-      })
-      .catch((error) => {
-        console.error("Sign-in error:", error.message);
-        alert("Error during login: " + error.message);
-      });
-  }
 </script>
 
 <script>
