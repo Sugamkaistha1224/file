@@ -720,20 +720,23 @@
 
 <script>
   function loginUser() {
-    const username = document.getElementById('loginUsername').value.trim();
-    const password = document.getElementById('loginPassword').value.trim();
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value.trim();
 
-    // Simple validation (you can enhance this as needed)
-    if (username && password) {
-      // Save email in localStorage
-      localStorage.setItem('userEmail', username);
+  // Simple validation (you can enhance this as needed)
+  if (username && password) {
+    // Save email in localStorage
+    localStorage.setItem('userEmail', username);
 
-      // Close the modal
-      closeLoginModal();
-    } else {
-      alert("Please fill out both fields.");
-    }
+    // Close the modal
+    closeLoginModal();
+  } else {
+    alert("Please fill out both fields.");
   }
+}
+console.log("Logged in email:", username);  // Add this line for debugging
+localStorage.setItem('userEmail', username);
+
 </script>
 
 
