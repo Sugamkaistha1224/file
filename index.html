@@ -724,14 +724,14 @@
 
   <button onclick="loginUser()" style="width:100%; padding:12px; background-color:#4e54c8; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; margin-bottom:15px; transition:background 0.3s;">Login</button>
 
+  <!-- Google Sign-In -->
   <div id="g_id_onload" 
      data-client_id="744785138803-13k3tkqvd0gfs1blvr3a5ogfq1fm6o04.apps.googleusercontent.com" 
      data-context="signin" 
      data-ux_mode="popup" 
      data-callback="handleGoogleLogin" 
      data-auto_prompt="false">
-</div>
-
+  </div>
 
   <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="filled_blue" data-text="continue_with" data-size="large" data-logo_alignment="left"></div>
 </div>
@@ -746,20 +746,25 @@
     background-color: #6c63ff;
   }
 </style>
+
+<!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
 <!-- Firebase App SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+
 <script>
   // Firebase configuration
   const firebaseConfig = {
     apiKey: "AIzaSyD6BWxdK_BZpAH0SMXEIFy1uA7XdwBhddg",
-  authDomain: "teleport-b0434.firebaseapp.com",
-  projectId: "teleport-b0434",
-  storageBucket: "teleport-b0434.firebasestorage.app",
-  messagingSenderId: "873499675326",
-  appId: "1:873499675326:web:3e83e2e84b97a37c662cef",
-  measurementId: "G-PPZZTHST0M"
+    authDomain: "teleport-b0434.firebaseapp.com",
+    projectId: "teleport-b0434",
+    storageBucket: "teleport-b0434.appspot.com",
+    messagingSenderId: "873499675326",
+    appId: "1:873499675326:web:3e83e2e84b97a37c662cef",
+    measurementId: "G-PPZZTHST0M"
   };
 
   // Initialize Firebase
@@ -767,107 +772,71 @@
   const auth = firebase.auth();
   const database = firebase.database();
 </script>
+
 <script>
-  // Handle the Google login after the user successfully logs in
+  // Handle Google Sign-In response
   function handleGoogleLogin(response) {
-    // Extract the Google user credential from the response
-    const idToken = response.credential;
+    const credential = firebase.auth.GoogleAuthProvider.credential(response.credential);
 
-    // Create a credential for Firebase using the Google ID token
-    const credential = firebase.auth.GoogleAuthProvider.credential(idToken);
-
-    // Sign in to Firebase with the credential
     auth.signInWithCredential(credential)
       .then((result) => {
         const user = result.user;
-        console.log('User logged in: ', user);
+        console.log('Google user logged in:', user.email);
 
-        // Store user info (email, UID) in Firebase Realtime Database
+        // Store in Realtime Database
         database.ref('user_logins').push({
           email: user.email,
           uid: user.uid,
           displayName: user.displayName,
           timestamp: firebase.database.ServerValue.TIMESTAMP
         }).then(() => {
-          console.log("User login data stored successfully");
-        }).catch((error) => {
-          console.error("Error storing login data: ", error);
+          console.log("User login stored in Firebase");
+        }).catch((err) => {
+          console.error("Error storing login info:", err);
         });
       })
       .catch((error) => {
-        console.error('Error during Firebase login: ', error);
+        console.error("Google login failed:", error);
       });
   }
-</script>
-<script>
-  // Count unique users who logged in
-  function updateLoginCount() {
-    database.ref('user_logins').once('value').then((snapshot) => {
-      const userLogins = snapshot.val();
-      const uniqueUsers = new Set();
-
-      for (let userId in userLogins) {
-        uniqueUsers.add(userLogins[userId].email);
-      }
-
-      document.getElementById('loginCountDisplay').innerText = `Users who logged in: ${uniqueUsers.size}`;
-    });
-  }
-
-  // Call this function to update the count
-  updateLoginCount();
 </script>
 
 <script>
   function loginUser() {
-  const username = document.getElementById('loginUsername').value.trim();
-  const password = document.getElementById('loginPassword').value.trim();
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
 
-  // Simple validation (you can enhance this as needed)
-  if (username && password) {
-    // Save email in localStorage
-    localStorage.setItem('userEmail', username);
-
-    // Close the modal
-    closeLoginModal();
-  } else {
-    alert("Please fill out both fields.");
+    if (username && password) {
+      localStorage.setItem('userEmail', username);
+      closeLoginModal();
+    } else {
+      alert("Please fill out both fields.");
+    }
   }
-}
-console.log("Logged in email:", username);  // Add this line for debugging
-localStorage.setItem('userEmail', username);
-
 </script>
+
 <script>
-  // Initialize Google sign-in button
-  const provider = new firebase.auth.GoogleAuthProvider();
-
-  function handleGoogleLogin() {
-    firebase.auth().signInWithPopup(provider)
-      .then((result) => {
-        const user = result.user;
-        // User is signed in
-        console.log('User signed in: ', user);
-
-        // Store user login info (for example, email) in Firebase Realtime Database
-        database.ref('user_logins').push({
-          email: user.email,
-          timestamp: firebase.database.ServerValue.TIMESTAMP
-        }).then(() => {
-          console.log("User login data stored successfully");
-        }).catch((error) => {
-          console.error("Error storing login data: ", error);
-        });
-      })
-      .catch((error) => {
-        console.error("Error during Google sign-in: ", error);
-      });
+  function closeLoginModal() {
+    document.getElementById('loginModal').style.display = 'none';
   }
-
-  // Attach Google Sign-In button
-  const googleSignInButton = document.getElementById('googleSignInButton');
-  googleSignInButton.innerHTML = `<button onclick="handleGoogleLogin()">Sign in with Google</button>`;
 </script>
+
+<script>
+  function updateLoginCount() {
+    database.ref('user_logins').once('value').then((snapshot) => {
+      const userLogins = snapshot.val();
+      const uniqueUsers = new Set();
+      for (let id in userLogins) {
+        uniqueUsers.add(userLogins[id].email);
+      }
+      document.getElementById('loginCountDisplay').innerText = `Users who logged in: ${uniqueUsers.size}`;
+    });
+  }
+  updateLoginCount();
+</script>
+
+<!-- Where login count will show -->
+<div id="loginCountDisplay" style="text-align:center; margin-top:10px; color:white; font-weight:bold;"></div>
 
   <!-- Share Modal -->
   <div id="shareModal" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%); background:white; padding:20px; border-radius:10px; box-shadow:0px 0px 10px rgba(0,0,0,0.3); z-index:1000;">
