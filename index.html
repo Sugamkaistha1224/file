@@ -738,7 +738,23 @@ console.log("Logged in email:", username);  // Add this line for debugging
 localStorage.setItem('userEmail', username);
 
 </script>
+<script>
+  function handleGoogleLogin(response) {
+    if (response.credential) {
+      const googleUser = jwt_decode(response.credential); // Decode the token to get the user's info
+      const email = googleUser.email;  // Get the user's email
 
+      // Save the email to localStorage
+      localStorage.setItem('userEmail', email);
+
+      // Optionally, log it to see if it’s working
+      console.log("Logged in with Google, email:", email);
+      
+      // Close the login modal after success
+      closeLoginModal();
+    }
+  }
+</script>
 
   <!-- Share Modal -->
   <div id="shareModal" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%); background:white; padding:20px; border-radius:10px; box-shadow:0px 0px 10px rgba(0,0,0,0.3); z-index:1000;">
