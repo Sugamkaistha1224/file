@@ -723,6 +723,9 @@
   ">
 
   <button onclick="loginUser()" style="width:100%; padding:12px; background-color:#4e54c8; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; margin-bottom:15px; transition:background 0.3s;">Login</button>
+  
+<!-- Google Identity Services Sign-In -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <!-- Google Sign-In -->
   <div id="g_id_onload" 
@@ -748,15 +751,16 @@
 </style>
 
 <!-- Google Identity Services -->
+
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <!-- Firebase App SDK -->
+<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
 
 <script>
-  // Firebase configuration
   const firebaseConfig = {
     apiKey: "AIzaSyD6BWxdK_BZpAH0SMXEIFy1uA7XdwBhddg",
     authDomain: "teleport-b0434.firebaseapp.com",
@@ -768,38 +772,41 @@
   };
 
   // Initialize Firebase
-  const app = firebase.initializeApp(firebaseConfig);
+  firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const database = firebase.database();
 </script>
-
 <script>
-  // Handle Google Sign-In response
+  // Called by Google Identity Services on successful login
   function handleGoogleLogin(response) {
-    const credential = firebase.auth.GoogleAuthProvider.credential(response.credential);
+    const idToken = response.credential;
 
+    // Convert GIS token into Firebase credential
+    const credential = firebase.auth.GoogleAuthProvider.credential(idToken);
+
+    // Sign in with Firebase using the credential
     auth.signInWithCredential(credential)
       .then((result) => {
         const user = result.user;
-        console.log('Google user logged in:', user.email);
 
-        // Store in Realtime Database
-        database.ref('user_logins').push({
+        // Store user in Realtime Database
+        database.ref('user_logins/' + user.uid).set({
           email: user.email,
-          uid: user.uid,
           displayName: user.displayName,
+          uid: user.uid,
           timestamp: firebase.database.ServerValue.TIMESTAMP
-        }).then(() => {
-          console.log("User login stored in Firebase");
-        }).catch((err) => {
-          console.error("Error storing login info:", err);
         });
+
+        alert(`Welcome ${user.displayName || user.email}`);
+        console.log("User signed in and stored:", user.email);
       })
       .catch((error) => {
-        console.error("Google login failed:", error);
+        console.error("Firebase login error:", error.message);
+        alert("Login failed: " + error.message);
       });
   }
 </script>
+
 
 <script>
   function loginUser() {
