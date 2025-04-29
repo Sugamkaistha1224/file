@@ -719,14 +719,23 @@
 </style>
 
 <script>
-  // Close the login modal when cross button is clicked
-  function closeLoginModal() {
-    document.getElementById('loginModal').style.display = 'none';
-    if (document.getElementById('mainApp')) {
-      document.getElementById('mainApp').style.display = 'block'; // Show main app when modal is closed
+  function loginUser() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+
+    // Simple validation (you can enhance this as needed)
+    if (username && password) {
+      // Save email in localStorage
+      localStorage.setItem('userEmail', username);
+
+      // Close the modal
+      closeLoginModal();
+    } else {
+      alert("Please fill out both fields.");
     }
   }
 </script>
+
 
   <!-- Share Modal -->
   <div id="shareModal" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%); background:white; padding:20px; border-radius:10px; box-shadow:0px 0px 10px rgba(0,0,0,0.3); z-index:1000;">
@@ -771,18 +780,16 @@
 <style>
 /* Folder Modal */
 .modal-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   display: none;
   position: fixed;
-  top: 20px;
-  left: 20px;
-  width: 320px;
+  top: 50%;
+  left: 25%;
+  transform: translate(-50%, -50%);
   z-index: 1000;
   cursor: move;
   animation: fadeIn 0.4s ease;
 }
+
 
 
 .modal-content {
@@ -906,16 +913,19 @@
 /* Upload Modal */
 #uploadModal {
   display: none;
-  position: fixed;
-  top: 100px;
-  left: 350px;
+  position: fixed; /* use fixed instead of absolute */
+  left: 35%;
+  top: 50%;
+  transform: translate(-50%, -50%) translateX(200px); /* center + push to right */
   width: 300px;
   background: #fff;
   border-radius: 12px;
   padding: 20px;
   z-index: 1001;
   box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  cursor: move; /* enable drag cursor */
 }
+
 #uploadModal h3 {
   margin-top: 0;
 }
@@ -970,7 +980,9 @@
 
 <!-- Upload Panel -->
 <!-- Upload Modal (Include inside your body) -->
-<div id="uploadModal" class="modal-container">
+<div id="uploadModal" class="modal-container" onmousedown="startDrag(event)">
+
+
   <div class="modal-content">
     <span class="close-button" onclick="closeUpload()">✖</span>
     <h3 class="modal-title" id="uploadFolderTitle">Folder: </h3>
@@ -995,9 +1007,13 @@
     </div>
   </div>
 </div>
+<script type="text/javascript">
+  // Function to render the list of files with delete option
+  
+</script>
 <!-- Add the following script at the end of your HTML document -->
-<script>
-let selectedFolder = ''; // To store the selected folder
+<script type="text/javascript">
+let selectedFolder = '';
 
 // Function to preview the file name after selection
 function previewFileName() {
@@ -1010,87 +1026,141 @@ function previewFileName() {
   }
 }
 
-// Function to delete all files in the selected folder
-function deleteAllFiles() {
-  if (!confirm("Are you sure you want to delete all files in this folder?")) return;
-
-  const folders = getFolders();
-  const folder = folders.find(f => f.name === selectedFolder);
-  folder.files = []; // Clear all files
-  saveFolders(folders);
-  renderFiles(); // Re-render file list after deletion
-}
-
 // Function to upload a file to the selected folder
 function uploadToFolder() {
   const fileInput = document.getElementById('uploadFile');
-  const file = fileInput.files[0]; // Get selected file
-  if (!file) return alert('No file selected'); // If no file is selected, show an alert
+  const file = fileInput.files[0];
+  if (!file) return alert('No file selected');
 
-  const uploadTime = new Date().toLocaleString(); // Get real-time upload timestamp
-  console.log('File Upload Time: ', uploadTime); // Debugging: Check upload time
-
-  // Create a URL object for the file
+  const uploadTime = new Date().toLocaleString();
   const url = URL.createObjectURL(file);
   const folders = getFolders();
   const folder = folders.find(f => f.name === selectedFolder);
-  
-  // Add file to the folder along with upload time
+
   folder.files.push({ name: file.name, url, uploadTime });
-  console.log('Files after upload: ', folder.files); // Debugging: Check the contents of folder.files
-  saveFolders(folders); // Save the updated folder list
-  fileInput.value = ''; // Clear file input field
-  renderFiles(); // Re-render file list with the new file
+  saveFolders(folders);
+  fileInput.value = '';
+  previewFileName();
+  renderFiles();
 }
 
-// Function to render the list of files in the selected folder
-function renderFiles() {
+// Function to delete a single file by index
+function deleteFile(index) {
   const folders = getFolders();
   const folder = folders.find(f => f.name === selectedFolder);
-  const fileList = document.getElementById('fileList');
-  fileList.innerHTML = ''; // Clear current file list
-
-  folder.files.forEach(file => {
-    console.log('Rendering file: ', file); // Debugging: Check the file details being rendered
-    const fileItem = document.createElement('div');
-    fileItem.classList.add('file-item');
-    fileItem.innerHTML = `
-      <div>
-        <b>File Name:</b> ${file.name}
-        <p><strong>Uploaded at:</strong> ${file.uploadTime}</p>
-        <a href="${file.url}" download="${file.name}">
-          <button>⬇️ Download</button>
-        </a>
-      </div>
-      <hr/>
-    `;
-    fileList.appendChild(fileItem); // Add item to the list
-  });
+  folder.files.splice(index, 1);
+  saveFolders(folders);
+  renderFiles(); // Re-render the file list
 }
 
-// Function to get folders from local storage
+
+// Function to delete all files
+function deleteAllFiles() {
+  const folders = getFolders();
+  const folder = folders.find(f => f.name === selectedFolder);
+  
+  // Show the list of files for individual deletion
+  const fileList = document.getElementById('fileList');
+  fileList.innerHTML = ''; // Clear previous content
+  
+  if (folder.files.length > 0) {
+    folder.files.forEach((file, index) => {
+      const fileItem = document.createElement('div');
+      fileItem.classList.add('file-item');
+      fileItem.innerHTML = `
+        <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <b>📄 <a href="${file.url}" download="${file.name}" style="text-decoration: underline; color: blue;">${file.name}</a></b><br>
+            <small>🕒 <strong>Uploaded at:</strong> ${file.uploadTime}</small>
+          </div>
+          <div>
+            <button onclick="deleteFile(${index})" style="background: none; border: none; cursor: pointer; font-size: 18px;" title="Delete this file">❌</button>
+          </div>
+        </div>
+        <hr/>
+      `;
+      fileList.appendChild(fileItem);
+    });
+  }
+}
+
+
+// Function to render the list of files
+function renderFiles() {
+    const folders = getFolders();
+    const folder = folders.find(f => f.name === selectedFolder);
+    const fileList = document.getElementById('fileList');
+    fileList.innerHTML = ''; // Clear current file list
+
+    if (folder.files.length > 0) {
+      // Add instruction text
+      const instruction = document.createElement('p');
+      instruction.style.fontStyle = 'italic';
+      instruction.style.color = '#555';
+      instruction.textContent = '📄 Click on file to download or ❌ to delete';
+      fileList.appendChild(instruction);
+    }
+
+    folder.files.forEach((file, index) => {
+      const fileItem = document.createElement('div');
+      fileItem.classList.add('file-item');
+      
+      fileItem.innerHTML = `
+        <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <b>📄 <a href="${file.url}" download="${file.name}" style="text-decoration: underline; color: blue;">${file.name}</a></b>
+            <button onclick="deleteFile(${index})" style="background: none; border: none; cursor: pointer; font-size: 18px; margin-left: 10px;" title="Delete this file">❌</button><br>
+            <small>🕒 <strong>Uploaded at:</strong> ${file.uploadTime}</small>
+          </div>
+        </div>
+        <hr/>
+      `;
+      
+      fileList.appendChild(fileItem); // Add each file item to the list
+    });
+  }
+
+  // Function to delete a specific file by index
+  function deleteFile(index) {
+    const folders = getFolders();
+    const folder = folders.find(f => f.name === selectedFolder);
+    folder.files.splice(index, 1); // Remove the file from the array
+    saveFolders(folders); // Save the updated folder data
+    renderFiles(); // Re-render the file list
+  }
+
+  // Function to delete all files in the folder
+  function deleteAllFiles() {
+    if (!confirm("Are you sure you want to delete all files in this folder?")) return;
+
+    const folders = getFolders();
+    const folder = folders.find(f => f.name === selectedFolder);
+    folder.files = []; // Clear all files
+    saveFolders(folders); // Save the updated folder data
+    renderFiles(); // Re-render the file list
+  }
+// Helpers for folder storage
 function getFolders() {
   return JSON.parse(localStorage.getItem('folders') || '[]');
 }
 
-// Function to save folders to local storage
 function saveFolders(folders) {
   localStorage.setItem('folders', JSON.stringify(folders));
 }
 
-// Function to open the upload modal for a specific folder
+// Modal control
 function openUpload(folderName) {
   selectedFolder = folderName;
   document.getElementById('uploadFolderTitle').innerText = `Folder: ${folderName}`;
-  document.getElementById('uploadModal').style.display = 'block'; // Show upload modal
-  renderFiles(); // Render the current files in the folder
+  document.getElementById('uploadModal').style.display = 'block';
+  renderFiles();
 }
 
-// Function to close the upload modal
 function closeUpload() {
-  document.getElementById('uploadModal').style.display = 'none'; // Hide upload modal
+  document.getElementById('uploadModal').style.display = 'none';
 }
 </script>
+
 
 
 <script type="text/javascript">
@@ -1914,10 +1984,32 @@ window.onload = function() {
 
   <!-- Delete All Button (Dustbin Icon) -->
   <button class="delete-all-btn" id="deleteAllBtn">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M3 6h18M5 6l1 14h12l1-14H5zM9 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-    </svg>
-  </button>
+  <span class="delete-all-text">Delete All</span>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 6h18M5 6l1 14h12l1-14H5zM9 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+  </svg>
+</button>
+<style type="text/css">
+	.delete-all-btn {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.delete-all-text {
+  margin-right: 8px; /* Space between the text and the icon */
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.delete-all-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+</style>
 
   <!-- Hidden File Input -->
   <input type="file" id="fileInput" style="display: none;" />
@@ -1943,7 +2035,7 @@ window.onload = function() {
       if (isFileExpired(fileData.uploadTime)) {
         return; // Skip expired files
       }
-      addDownloadItem(fileData.name, fileData.size, fileData.uploadTime, fileData.url);
+      addDownloadItem(fileData.name, fileData.size, fileData.uploadTime, fileData.url, fileData.uploadTime);
     });
   };
 
@@ -1970,7 +2062,7 @@ window.onload = function() {
 
       localStorage.setItem('uploadedFiles', JSON.stringify(uploadedFiles));
 
-      addDownloadItem(file.name, (file.size / 1024 / 1024).toFixed(2), formattedTime, fileURL);
+      addDownloadItem(file.name, (file.size / 1024 / 1024).toFixed(2), formattedTime, fileURL, formattedTime);
 
       // Generate QR code for the file
       generateQRCode(fileURL);
@@ -1988,7 +2080,7 @@ window.onload = function() {
     return Date.now() > expirationTime;
   }
 
-  function addDownloadItem(fileName, fileSize, uploadTime, fileURL) {
+  function addDownloadItem(fileName, fileSize, uploadTime, fileURL, fileUploadTime) {
     const downloadItem = document.createElement('div');
     downloadItem.classList.add('download-item-line');
 
@@ -2012,6 +2104,13 @@ window.onload = function() {
             <path d="M403.939 295.749l-78.814 78.833V172.125c0-10.557-8.568-19.125-19.125-19.125s-19.125 8.568-19.125 19.125v202.457l-78.814-78.814c-7.478-7.478-19.584-7.478-27.043 0-7.478 7.478-7.478 19.584 0 27.042L289.208 431c4.59 4.59 10.863 6.005 16.812 4.953 5.929 1.052 12.221-.382 16.811-4.953l108.19-108.19c7.478-7.478 7.478-19.583 0-27.042-7.498-7.478-19.604-7.478-27.082-.019zM306 0C137.012 0 0 136.992 0 306s137.012 306 306 306 306-137.012 306-306S475.008 0 306 0zm0 573.75C158.125 573.75 38.25 453.875 38.25 306S158.125 38.25 306 38.25 573.75 158.125 573.75 306 453.875 573.75 306 573.75z"/>
           </svg>
         </div>
+        <div class="delete-file-btn">
+    <button onclick="deleteFile('${fileUploadTime}')">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="delete-icon">
+        <path d="M3 6h18M5 6l1 14h12l1-14H5zM9 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+      </svg>
+    </button>
+  </div>
       </div>
     `;
 
@@ -2026,10 +2125,26 @@ window.onload = function() {
       document.body.removeChild(tempLink);
     });
 
+    // Add the item to the download list
     downloadList.appendChild(downloadItem);
 
     // Smooth scroll to bottom when new file is added
     downloadList.scrollTop = downloadList.scrollHeight;
+  }
+
+  function deleteFile(fileUploadTime) {
+    // Remove file from localStorage based on upload time
+    const uploadedFiles = JSON.parse(localStorage.getItem('uploadedFiles')) || [];
+    const updatedFiles = uploadedFiles.filter(file => file.uploadTime !== fileUploadTime);
+    localStorage.setItem('uploadedFiles', JSON.stringify(updatedFiles));
+
+    // Remove the file from the display
+    const fileElements = document.querySelectorAll('.download-item-line');
+    fileElements.forEach(element => {
+      if (element.querySelector('.line-header').textContent === fileUploadTime) {
+        element.remove();
+      }
+    });
   }
 
   function generateQRCode(fileURL) {
@@ -2041,6 +2156,55 @@ window.onload = function() {
 </script>
 
 <style>
+	.download-area {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.download-item-texts {
+  flex: 1;
+  padding-right: 15px;
+}
+
+.download-icon, .delete-file-btn {
+  display: flex;
+  align-items: center;
+}
+
+.delete-file-btn button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 0;
+  margin-left: 15px; /* Space between download icon and delete button */
+}
+
+.delete-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.download-btn {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.download-btn path {
+  fill: #4b50dd;
+}
+
+.download-item-icon svg {
+  width: 30px;
+  height: 30px;
+}
+
   /* Styling for the buttons */
   .upload-btn, .delete-all-btn {
     font-size: 16px;
