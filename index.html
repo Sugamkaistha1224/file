@@ -725,50 +725,46 @@
   <button onclick="loginUser()" style="width:100%; padding:12px; background-color:#4e54c8; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; margin-bottom:15px; transition:background 0.3s;">Login</button>
 
 <!-- Google Identity Services Sign-In -->
+<!-- Google Sign-In -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://cdn.jsdelivr.net/npm/jwt-decode@4.0.0/build/jwt-decode.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jwt-decode@4.0.0/build/jwt-decode.min.js"></script>
 
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
-
-  <!-- Google Sign-In -->
-  <div id="g_id_onload" 
-   data-client_id="744785138803-13k3tkqvd0gfs1blvr3a5ogfq1fm6o04.apps.googleusercontent.com" 
-   data-context="signin" 
-   data-ux_mode="popup" 
-   data-callback="handleGoogleLogin" 
-   data-auto_prompt="false">
+<div id="g_id_onload" 
+     data-client_id="744785138803-13k3tkqvd0gfs1blvr3a5ogfq1fm6o04.apps.googleusercontent.com" 
+     data-context="signin" 
+     data-ux_mode="popup" 
+     data-callback="handleGoogleLogin" 
+     data-auto_prompt="false">
 </div>
 
-  <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="filled_blue" data-text="continue_with" data-size="large" data-logo_alignment="left"></div>
-
+<div class="g_id_signin"
+     data-type="standard"
+     data-shape="rectangular"
+     data-theme="filled_blue"
+     data-text="continue_with"
+     data-size="large"
+     data-logo_alignment="left">
 </div>
 
-<!-- Animation for the modal -->
-<style>
-  @keyframes popUp {
-    0% { transform:translate(-50%, -60%) scale(0.9); opacity:0; }
-    100% { transform:translate(-50%, -50%) scale(1); opacity:1; }
-  }
-  #loginModal button:hover {
-    background-color: #6c63ff;
-  }
-</style>
 <script>
   function handleGoogleLogin(response) {
-    const userObject = jwt_decode(response.credential);
-    const email = userObject.email;
+    try {
+      const user = jwt_decode(response.credential);
+      const email = user.email;
 
-    if (email) {
-      localStorage.setItem("googleUserEmail", email);
-      // Optional: redirect after login
-      window.location.href = "https://sugamkaistha1224.github.io/server-status/"; // ✅ redirect to cloud page
-    } else {
-      alert("Login failed: email not detected.");
+      if (email) {
+        // Save email to localStorage so the next page can read it
+        localStorage.setItem("googleUserEmail", email);
+        window.location.href = "https://sugamkaistha1224.github.io/server-status/";
+      } else {
+        console.error("Email not found in token.");
+      }
+    } catch (err) {
+      console.error("JWT decode error:", err);
     }
   }
 </script>
+
 <!-- Google Identity Services -->
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
