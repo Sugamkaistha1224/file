@@ -727,19 +727,25 @@
 <!-- Google Identity Services Sign-In -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-  <!-- Google Sign-In -->
-  <div id="g_id_onload" 
-     data-client_id="744785138803-13k3tkqvd0gfs1blvr3a5ogfq1fm6o04.apps.googleusercontent.com" 
-     data-context="signin" 
-     data-ux_mode="popup" 
-     data-callback="handleGoogleLogin" 
-     data-auto_prompt="false">
-  </div>
-
-  <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="filled_blue" data-text="continue_with" data-size="large" data-logo_alignment="left"></div>
+<!-- Google Sign-In Button -->
+<div id="g_id_onload" 
+   data-client_id="744785138803-13k3tkqvd0gfs1blvr3a5ogfq1fm6o04.apps.googleusercontent.com" 
+   data-context="signin" 
+   data-ux_mode="popup" 
+   data-callback="handleGoogleLogin" 
+   data-auto_prompt="false">
 </div>
 
-<!-- Animation for the modal -->
+<div class="g_id_signin" 
+     data-type="standard" 
+     data-shape="rectangular" 
+     data-theme="filled_blue" 
+     data-text="continue_with" 
+     data-size="large" 
+     data-logo_alignment="left">
+</div>
+
+<!-- Modal Animation Styles -->
 <style>
   @keyframes popUp {
     0% { transform:translate(-50%, -60%) scale(0.9); opacity:0; }
@@ -750,9 +756,37 @@
   }
 </style>
 
-<!-- Google Identity Services -->
+<!-- Email Log Display -->
+<div id="emailLog" class="mt-4 text-sm text-gray-700 dark:text-gray-300"></div>
 
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+  // Google login callback
+  function handleGoogleLogin(response) {
+    const userInfo = jwt_decode(response.credential); // Decoding the JWT token
+
+    const email = userInfo.email;
+    const name = userInfo.name;
+
+    // Save to localStorage
+    localStorage.setItem('userEmail', email);
+    localStorage.setItem('userName', name);
+
+    // Show in Email Log
+    const logDiv = document.getElementById("emailLog");
+    logDiv.innerHTML = `<strong>Logged in as:</strong> ${email}`;
+  }
+
+  // Show stored email if already logged in
+  window.addEventListener('DOMContentLoaded', () => {
+    const email = localStorage.getItem('userEmail');
+    if (email) {
+      document.getElementById("emailLog").innerHTML = `<strong>Previously logged in as:</strong> ${email}`;
+    }
+  });
+</script>
+
+<!-- Include jwt-decode from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
 
 <!-- Firebase App SDK -->
 <!-- Firebase SDKs -->
