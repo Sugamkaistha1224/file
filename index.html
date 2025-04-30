@@ -726,6 +726,10 @@
 
 <!-- Google Identity Services Sign-In -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode@4.0.0/build/jwt-decode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode@4.0.0/build/jwt-decode.min.js"></script>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
 
   <!-- Google Sign-In -->
@@ -753,10 +757,15 @@
 </style>
 <script>
   function handleGoogleLogin(response) {
-    const data = jwt_decode(response.credential);
-    if (data && data.email) {
-      localStorage.setItem('googleUserEmail', data.email);
-      console.log("Email saved to localStorage:", data.email);
+    const userObject = jwt_decode(response.credential);
+    const email = userObject.email;
+
+    if (email) {
+      localStorage.setItem("googleUserEmail", email);
+      // Optional: redirect after login
+      window.location.href = "sugamcloud.html"; // ✅ redirect to cloud page
+    } else {
+      alert("Login failed: email not detected.");
     }
   }
 </script>
