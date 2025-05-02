@@ -667,9 +667,72 @@
 </head>
 <body>
 
+<!-- Firebase Auth UI -->
 
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyD6BWxdK_BZpAH0SMXEIFy1uA7XdwBhddg",
+  authDomain: "teleport-b0434.firebaseapp.com",
+  projectId: "teleport-b0434",
+  storageBucket: "teleport-b0434.firebasestorage.app",
+  messagingSenderId: "873499675326",
+  appId: "1:873499675326:web:3e83e2e84b97a37c662cef",
+  measurementId: "G-PPZZTHST0M"
+  };
+  firebase.initializeApp(firebaseConfig);
+</script>
+<script type="text/javascript">
+	function signInWithGoogle() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  firebase.auth().signInWithPopup(provider).then(result => {
+    loadUserFiles(result.user.uid);
+  });
+}
+
+document.getElementById('emailLoginForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const email = email.value;
+  const password = password.value;
+  firebase.auth().signInWithEmailAndPassword(email, password)
+    .then(result => loadUserFiles(result.user.uid));
+});
+
+</script>
 <link href="https://fonts.googleapis.com/css?family=DM+Sans:400,500,700&display=swap" rel="stylesheet">
 <div class="app-container">
+
+	<div style="position: fixed; top: 5px; left: 4px; z-index: 1000; transition: all 0.3s ease; border-radius: 50%; padding: 8px; backdrop-filter: blur(3px); box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);">
+  <button onclick="location.reload()" title="Refresh Page" style="background: none; border: none; cursor: pointer;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="currentColor"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-refresh-cw"
+         style="transition: transform 0.3s ease, stroke 0.3s ease;">
+      <polyline points="23 4 23 10 17 10"></polyline>
+      <polyline points="1 20 1 14 7 14"></polyline>
+      <path d="M3.51 9a9 9 0 0114.13-3.36L23 10M1 14l5.36 5.36A9 9 0 0020.49 15"></path>
+    </svg>
+  </button>
+</div>
+
+<script>
+  const refreshDiv = document.querySelector('div[style*="position: fixed"]');
+  const refreshIcon = refreshDiv.querySelector('svg');
+
+  refreshDiv.addEventListener('mouseenter', () => {
+    refreshIcon.style.transform = 'rotate(90deg) scale(1.1)';
+    refreshIcon.style.stroke = '#28a745';
+    refreshDiv.style.boxShadow = '0 6px 16px rgba(40, 167, 69, 0.4)';
+  });
+
+  refreshDiv.addEventListener('mouseleave', () => {
+    refreshIcon.style.transform = 'rotate(0deg) scale(1)';
+    refreshIcon.style.stroke = 'currentColor';
+    refreshDiv.style.boxShadow = '0 4px 12px rgba(0, 123, 255, 0.2)';
+  });
+</script>
 <!-- Login Modal -->
 <div id="loginModal" style="
   display:none;
@@ -923,9 +986,174 @@
 });
 
 </script>
+<!-- Share Icon -->
+<a href="#" class="item-link" onclick="openSharePopup()">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+       stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+       class="feather feather-share-2" viewBox="0 0 24 24">
+    <circle cx="18" cy="5" r="3"></circle>
+    <circle cx="6" cy="12" r="3"></circle>
+    <circle cx="18" cy="19" r="3"></circle>
+    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+  </svg>
+</a>
+<script>
+function openSharePopup() {
+  const screenWidth = window.innerWidth;
+  const screenHeight = window.innerHeight;
+  const popupWidth = screenWidth * 0.6;
+  const popupHeight = screenHeight * 0.9;
+  const left = (screenWidth - popupWidth) / 2;
+  const top = (screenHeight - popupHeight) / 2;
+
+  const popup = window.open('', 'iframePopupShare', `width=${popupWidth},height=${popupHeight},top=${top},left=${left}`);
+
+  popup.document.write(`
+    <html>
+      <head>
+        <title>Share Dashboard</title>
+        <style>
+          body, html { margin: 0; padding: 0; height: 100%; }
+          iframe { width: 100%; height: 100%; border: none; }
+        </style>
+      </head>
+      <body>
+        <iframe src="https://sugamkaisthagroups.w3spaces.com/test.html" allowfullscreen></iframe>
+      </body>
+    </html>
+  `);
+}
+</script>
+
+   
+<!-- Server Icon -->
+<!-- Server Icon -->
+<a href="#" class="item-link" onclick="openServerPopup()">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+       stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+       class="feather feather-server" viewBox="0 0 24 24">
+    <rect x="2" y="2" width="20" height="8" rx="2" ry="2" />
+    <rect x="2" y="14" width="20" height="8" rx="2" ry="2" />
+    <line x1="6" y1="6" x2="6.01" y2="6" />
+    <line x1="6" y1="18" x2="6.01" y2="18" />
+  </svg>
+</a>
+
+<script>
+function openServerPopup() {
+  const screenWidth = window.innerWidth;
+  const screenHeight = window.innerHeight;
+  const popupWidth = screenWidth * 0.6;
+  const popupHeight = screenHeight * 0.9;
+  const left = (screenWidth - popupWidth) / 2;
+  const top = (screenHeight - popupHeight) / 2;
+
+  const popup = window.open('', 'iframePopupServer', `width=${popupWidth},height=${popupHeight},top=${top},left=${left}`);
+
+  popup.document.write(`
+    <html>
+      <head>
+        <title>Server Dashboard</title>
+        <style>
+          body, html { margin: 0; padding: 0; height: 100%; }
+          iframe { width: 100%; height: 100%; border: none; }
+        </style>
+      </head>
+      <body>
+        <iframe src="https://sugam-navation.w3spaces.com/SugamCloud.html" allowfullscreen></iframe>
+      </body>
+    </html>
+  `);
+}
+</script>
 
 
-    <!-- Folder Button -->
+
+
+<!-- Task Manager Icon -->
+<a href="#" class="item-link" onclick="openTaskManagerPopup()">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor"
+       stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="feather feather-clipboard-check"
+       viewBox="0 0 24 24">
+    <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+    <path d="M9 3h6a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v0a2 2 0 0 1 2-2z"/>
+    <path d="M9 14l2 2 4-4"/>
+  </svg>
+</a>
+
+
+<!-- Calendar Icon -->
+<a href="#" class="item-link" onclick="openCalendarPopup()">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" 
+       stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" 
+       stroke-width="2" class="feather feather-calendar" viewBox="0 0 24 24">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+    <line x1="16" y1="2" x2="16" y2="6"/>
+    <line x1="8" y1="2" x2="8" y2="6"/>
+    <line x1="3" y1="10" x2="21" y2="10"/>
+  </svg>
+</a>
+
+<!-- JavaScript Functions -->
+<script>
+
+function openTaskManagerPopup() {
+  const screenWidth = window.innerWidth;
+  const screenHeight = window.innerHeight;
+  const popupWidth = screenWidth * 0.7;
+  const popupHeight = screenHeight * 0.;
+  const left = (screenWidth - popupWidth) / 2;
+  const top = (screenHeight - popupHeight) / 2;
+
+  const popup = window.open('', 'iframePopupTask', `width=${popupWidth},height=${popupHeight},top=${top},left=${left}`);
+
+  popup.document.write(`
+    <html>
+      <head>
+        <title>Task Manager</title>
+        <style>
+          body, html { margin: 0; padding: 0; height: 100%; }
+          iframe { width: 100%; height: 100%; border: none; }
+        </style>
+      </head>
+      <body>
+        <iframe src="https://sugamkaistha1224.github.io/taskmanager/" allowfullscreen></iframe>
+      </body>
+    </html>
+  `);
+}
+
+
+
+function openCalendarPopup() {
+  const screenWidth = window.innerWidth;
+  const screenHeight = window.innerHeight;
+  const popupWidth = screenWidth * 0.6;
+  const popupHeight = screenHeight * 0.9;
+  const left = (screenWidth - popupWidth) / 2;
+  const top = (screenHeight - popupHeight) / 2;
+
+  const popup = window.open('', 'iframePopupCalendar', `width=${popupWidth},height=${popupHeight},top=${top},left=${left}`);
+
+  popup.document.write(`
+    <html>
+      <head>
+        <title>Calendar Page</title>
+        <style>
+          body, html { margin: 0; padding: 0; height: 100%; }
+          iframe { width: 100%; height: 100%; border: none; }
+        </style>
+      </head>
+      <body>
+        <iframe src="https://sugamkaistha1224.github.io/Testing/" allowfullscreen></iframe>
+      </body>
+    </html>
+  `);
+}
+</script>
+
+ <!-- Folder Button -->
 <a href="#" class="item-link" id="pageLink">
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="feather feather-folder" viewBox="0 0 24 24">
     <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" />
@@ -939,14 +1167,14 @@
   display: none;
   position: fixed;
   top: 50%;
-  left: 25%;
+  left: 50%;
   transform: translate(-50%, -50%);
   z-index: 1000;
   cursor: move;
   animation: fadeIn 0.4s ease;
+  max-width: 90%;
+  width: 500px;
 }
-
-
 
 .modal-content {
   background: linear-gradient(135deg, #ffffff, #f2f3ff);
@@ -954,68 +1182,9 @@
   padding: 20px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
   position: relative;
-  width: 98%;             /* Nearly full width */
-  max-width: 1500px;      /* Very large modal */
-  height: 55vh;
+  height: auto;
   overflow-y: auto;
   animation: slideUp 0.4s ease;
-}
-
-/* Stylish Choose File Button */
-.custom-file-input-wrapper {
-  position: relative;
-  overflow: hidden;
-  display: inline-block;
-  margin-top: 10px;
-}
-.custom-file-input-wrapper input[type=file] {
-  font-size: 100px;
-  position: absolute;
-  left: 0;
-  top: 0;
-  opacity: 0;
-}
-.custom-file-input-btn {
-    font-size: 14px; /* Smaller text */
-    padding: 6px 10px; /* Smaller padding */
-    position: relative;
-    overflow: hidden;
-    display: inline-block;
-    cursor: pointer;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-  }
-
-.custom-file-input-btn:hover {
-  background-color: #3c41c9;
-}
-
-/* Delete All Button */
-.delete-all-btn {
-  background: #e74c3c;
-  color: white;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  float: right;
-  margin-bottom: 10px;
-}
-.delete-all-btn:hover {
-  background: #c0392b;
-}
-.close-button {
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  font-size: 20px;
-  color: #999;
-  cursor: pointer;
-}
-.close-button:hover {
-  color: #000;
 }
 
 .modal-title {
@@ -1024,7 +1193,7 @@
   text-align: center;
 }
 
-.modal-input {
+.modal-input, .modal-button {
   width: 100%;
   padding: 10px;
   margin-top: 12px;
@@ -1033,18 +1202,88 @@
 }
 
 .modal-button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
   background-color: #4b50dd;
   color: white;
   border: none;
-  border-radius: 8px;
   font-size: 1em;
   cursor: pointer;
 }
+
 .modal-button:hover {
   background-color: #3a3fcf;
+}
+
+.custom-file-input-btn {
+  display: inline-block;
+  background-color: #4b50dd;
+  color: white;
+
+  padding: 10px 16px;
+  font-size: 1em;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.custom-file-input-btn:hover {
+  background-color: #3c41c9;
+  transform: scale(1.03);
+}
+
+.custom-file-input-btn input[type="file"] {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  max-width: 400px;
+}
+
+.file-name-list {
+  margin-top: 10px;
+  font-style: italic;
+  color: #333;
+  font-size: 0.95em;
+  line-height: 1.6;
+}
+
+
+.delete-all-btn {
+  background: #4b50dd;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  float: right;
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.delete-all-btn:hover {
+   background-color: #c0392b;
+  transform: scale(1.05);
+  box-shadow: 0 0 8px rgba(231, 76, 60, 0.3);
+}
+
+.close-button {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 20px;
+  color: #999;
+  cursor: pointer;
+}
+
+.close-button:hover {
+  color: #000;
 }
 
 .folder-list div {
@@ -1062,32 +1301,75 @@
   cursor: pointer;
   transition: 0.3s ease;
 }
+
 .folder-list button:hover {
   background: #c8ccff;
 }
 
-/* Upload Modal */
+/* Responsive Design for Mobile */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 90%;
+    padding: 10px;
+  }
+
+  .modal-title {
+    font-size: 1.1em;
+  }
+
+  .modal-input, .modal-button {
+    padding: 8px;
+  }
+
+  .modal-button {
+    font-size: 0.9em;
+  }
+
+  .custom-file-input-btn {
+    font-size: 12px;
+    padding: 5px 8px;
+  }
+
+  .folder-list div {
+    font-size: 0.9em;
+  }
+
+  .folder-list button {
+    font-size: 0.9em;
+    padding: 4px 8px;
+  }
+
+  .delete-all-btn {
+    padding: 5px 8px;
+    font-size: 0.9em;
+  }
+
+  .close-button {
+    font-size: 18px;
+  }
+}
+
 #uploadModal {
   display: none;
-  position: fixed; /* use fixed instead of absolute */
-  left: 35%;
+  position: fixed;
+  left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%) translateX(200px); /* center + push to right */
-  width: 300px;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 400px;
   background: #fff;
   border-radius: 12px;
   padding: 20px;
   z-index: 1001;
   box-shadow: 0 0 20px rgba(0,0,0,0.2);
-  cursor: move; /* enable drag cursor */
+  cursor: move;
 }
 
 #uploadModal h3 {
   margin-top: 0;
+  font-size: 1.2em;
 }
-#uploadModal input[type="file"] {
-  margin: 10px 0;
-}
+
 #uploadModal button {
   background: #4b50dd;
   color: white;
@@ -1096,66 +1378,173 @@
   border-radius: 6px;
   cursor: pointer;
 }
-#fileList a {
-  display: block;
-  margin-top: 5px;
-  color: #333;
-  text-decoration: none;
-}
+
 .choose-folder-btn {
-  width: 100%; /* Make the button fill the width of the modal */
+  width: 100%;
   padding: 15px;
-  background-color: #4b50dd; /* Match the modal color theme */
+  background-color: #4b50dd;
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 1.2em;  /* Make the text larger */
+  font-size: 1.2em;
   cursor: pointer;
-  text-align: center; /* Center align the text */
-  box-sizing: border-box; /* Ensure padding is included in width calculation */
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  text-align: center;
+  box-sizing: border-box;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
 }
 
 .choose-folder-btn:hover {
-  background-color: #3c41c9; /* Darker shade on hover */
-  transform: scale(1.05); /* Slight grow effect on hover */
+  background-color: #3c41c9;
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  #uploadModal {
+    width: 90%;
+    padding: 15px;
+  }
+
+  .choose-folder-btn {
+    padding: 12px;
+    font-size: 1em;
+  }
+}
+/* Folder List Row Layout */
+/* Unified Button Look */
+/* Open Folder Button (Primary Blue Theme) */
+.open-folder-btn {
+  background: darkblue;
+  color: darkblue;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1em;
+  margin-left: 6px;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.open-folder-btn:hover {
+  background-color: darkblue;
+  transform: scale(1.05);
+  box-shadow: 0 0 8px rgba(75, 80, 221, 0.4);
+}
+
+/* Delete Folder Button (Red Theme) */
+.delete-folder-btn {
+  background: darkred;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.2em;
+  margin-left: 6px;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.delete-folder-btn:hover {
+  background-color: red;
+  transform: scale(1.05);
+  box-shadow: 0 0 8px rgba(231, 76, 60, 0.3);
+}
+
+/* Folder Row Layout */
+.folder-list div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f5f6ff;
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin: 10px 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* Folder name left-fixed */
+.folder-name {
+  flex: 1;
+  font-weight: bold;
+  color: darkblue;
+  word-break: break-word;
+  font-size: 1em;
 }
 
 </style>
-<!-- Folder Modal --><!-- Folder Modal HTML -->
+<style>
+#fileListContainer {
+  max-height: 250px;  /* Set how tall before scrolling begins */
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-top: 10px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+/* Optional: Add nice scrollbar */
+#fileListContainer::-webkit-scrollbar {
+  width: 6px;
+}
+#fileListContainer::-webkit-scrollbar-thumb {
+  background-color: #aaa;
+  border-radius: 4px;
+}
+</style>
+
+<!-- Folder Modal HTML -->
 <div id="folderModal" class="modal-container" onmousedown="startDrag(event)">
   <div class="modal-content" id="folderModalContent">
     <span class="close-button" onclick="closeFolderModal()">✖</span>
     <h3 class="modal-title">📁 Your Folders</h3>
     <input type="text" id="folderName" placeholder="New Folder Name" class="modal-input">
-    <button onclick="createFolder()" class="modal-button">+ Create Folder</button>
+    <button onclick="createFolder()" class="modal-button create-folder-btn">+ Create Folder</button>
     <hr class="modal-divider">
     <div id="folderList" class="folder-list"></div>
   </div>
 </div>
 
+
 <!-- Upload Panel -->
-<!-- Upload Modal (Include inside your body) -->
 <div id="uploadModal" class="modal-container" onmousedown="startDrag(event)">
-
-
   <div class="modal-content">
     <span class="close-button" onclick="closeUpload()">✖</span>
     <h3 class="modal-title" id="uploadFolderTitle">Folder: </h3>
-<small style="display: block; margin-bottom: 5px; color: gray; font-style: italic;">
-  📄 Click on uploaded file to download
-</small>
-    <!-- Upload File Section -->
+    <small style="display: block; margin-bottom: 5px; color: gray; font-style: italic;">
+      📄 Click on uploaded file to download
+    </small>
     <div class="custom-file-input-wrapper">
-      <button class="custom-file-input-btn">📁 Choose File
-        <input type="file" id="uploadFile" onchange="previewFileName()" />
-      </button>
-    </div>
+  <label class="custom-file-input-btn">📁 Choose Files
+    <input type="file" id="uploadFile" onchange="previewFileNames()" multiple />
+  </label>
+</div>
+<script type="text/javascript">
+	function previewFileNames() {
+  const input = document.getElementById("uploadFile");
+  const display = document.getElementById("fileNameDisplay");
+  display.innerHTML = "";
+
+  if (input.files.length === 0) {
+    display.innerHTML = "<i>No file selected</i>";
+    return;
+  }
+
+  const list = document.createElement("ul");
+  list.style.paddingLeft = "20px";
+  Array.from(input.files).forEach((file, index) => {
+    const li = document.createElement("li");
+    li.textContent = `${index + 1}. ${file.name}`;
+    list.appendChild(li);
+  });
+  display.appendChild(list);
+}
+
+</script>
+<div id="fileNameDisplay" class="file-name-list"></div>
     <span id="fileNameDisplay" style="margin-left: 10px; font-style: italic;"></span>
 
     <button onclick="uploadToFolder()" class="modal-button">⬆️ Upload</button>
 
-    <!-- File List with Delete All -->
     <hr class="modal-divider">
     <div>
       <button class="delete-all-btn" onclick="deleteAllFiles()">🗑️Delete All </button>
@@ -1163,206 +1552,80 @@
     </div>
   </div>
 </div>
-<script type="text/javascript">
-  // Function to render the list of files with delete option
-  
-</script>
-<!-- Add the following script at the end of your HTML document -->
-<script type="text/javascript">
-let selectedFolder = '';
-
-// Function to preview the file name after selection
-function previewFileName() {
-  const fileInput = document.getElementById('uploadFile');
-  const fileNameDisplay = document.getElementById('fileNameDisplay');
-  if (fileInput.files.length > 0) {
-    fileNameDisplay.textContent = fileInput.files[0].name;
-  } else {
-    fileNameDisplay.textContent = '';
-  }
-}
-
-// Function to upload a file to the selected folder
-function uploadToFolder() {
-  const fileInput = document.getElementById('uploadFile');
-  const file = fileInput.files[0];
-  if (!file) return alert('No file selected');
-
-  const uploadTime = new Date().toLocaleString();
-  const url = URL.createObjectURL(file);
-  const folders = getFolders();
-  const folder = folders.find(f => f.name === selectedFolder);
-
-  folder.files.push({ name: file.name, url, uploadTime });
-  saveFolders(folders);
-  fileInput.value = '';
-  previewFileName();
-  renderFiles();
-}
-
-// Function to delete a single file by index
-function deleteFile(index) {
-  const folders = getFolders();
-  const folder = folders.find(f => f.name === selectedFolder);
-  folder.files.splice(index, 1);
-  saveFolders(folders);
-  renderFiles(); // Re-render the file list
-}
-
-
-// Function to delete all files
-function deleteAllFiles() {
-  const folders = getFolders();
-  const folder = folders.find(f => f.name === selectedFolder);
-  
-  // Show the list of files for individual deletion
-  const fileList = document.getElementById('fileList');
-  fileList.innerHTML = ''; // Clear previous content
-  
-  if (folder.files.length > 0) {
-    folder.files.forEach((file, index) => {
-      const fileItem = document.createElement('div');
-      fileItem.classList.add('file-item');
-      fileItem.innerHTML = `
-        <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <b>📄 <a href="${file.url}" download="${file.name}" style="text-decoration: underline; color: blue;">${file.name}</a></b><br>
-            <small>🕒 <strong>Uploaded at:</strong> ${file.uploadTime}</small>
-          </div>
-          <div>
-            <button onclick="deleteFile(${index})" style="background: none; border: none; cursor: pointer; font-size: 18px;" title="Delete this file">❌</button>
-          </div>
-        </div>
-        <hr/>
-      `;
-      fileList.appendChild(fileItem);
-    });
-  }
-}
-
-
-// Function to render the list of files
-function renderFiles() {
-    const folders = getFolders();
-    const folder = folders.find(f => f.name === selectedFolder);
-    const fileList = document.getElementById('fileList');
-    fileList.innerHTML = ''; // Clear current file list
-
-    if (folder.files.length > 0) {
-      // Add instruction text
-      const instruction = document.createElement('p');
-      instruction.style.fontStyle = 'italic';
-      instruction.style.color = '#555';
-      instruction.textContent = '📄 Click on file to download or ❌ to delete';
-      fileList.appendChild(instruction);
-    }
-
-    folder.files.forEach((file, index) => {
-      const fileItem = document.createElement('div');
-      fileItem.classList.add('file-item');
-      
-      fileItem.innerHTML = `
-        <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <b>📄 <a href="${file.url}" download="${file.name}" style="text-decoration: underline; color: blue;">${file.name}</a></b>
-            <button onclick="deleteFile(${index})" style="background: none; border: none; cursor: pointer; font-size: 18px; margin-left: 10px;" title="Delete this file">❌</button><br>
-            <small>🕒 <strong>Uploaded at:</strong> ${file.uploadTime}</small>
-          </div>
-        </div>
-        <hr/>
-      `;
-      
-      fileList.appendChild(fileItem); // Add each file item to the list
-    });
-  }
-
-  // Function to delete a specific file by index
-  function deleteFile(index) {
-    const folders = getFolders();
-    const folder = folders.find(f => f.name === selectedFolder);
-    folder.files.splice(index, 1); // Remove the file from the array
-    saveFolders(folders); // Save the updated folder data
-    renderFiles(); // Re-render the file list
-  }
-
-  // Function to delete all files in the folder
-  function deleteAllFiles() {
-    if (!confirm("Are you sure you want to delete all files in this folder?")) return;
-
-    const folders = getFolders();
-    const folder = folders.find(f => f.name === selectedFolder);
-    folder.files = []; // Clear all files
-    saveFolders(folders); // Save the updated folder data
-    renderFiles(); // Re-render the file list
-  }
-// Helpers for folder storage
-function getFolders() {
-  return JSON.parse(localStorage.getItem('folders') || '[]');
-}
-
-function saveFolders(folders) {
-  localStorage.setItem('folders', JSON.stringify(folders));
-}
-
-// Modal control
-function openUpload(folderName) {
-  selectedFolder = folderName;
-  document.getElementById('uploadFolderTitle').innerText = `Folder: ${folderName}`;
-  document.getElementById('uploadModal').style.display = 'block';
-  renderFiles();
-}
-
-function closeUpload() {
-  document.getElementById('uploadModal').style.display = 'none';
-}
-</script>
-
-
 
 <script type="text/javascript">
-  // Function to preview the file name after selection
+  let selectedFolder = '';
+
   function previewFileName() {
     const fileInput = document.getElementById('uploadFile');
     const fileNameDisplay = document.getElementById('fileNameDisplay');
     if (fileInput.files.length > 0) {
-      fileNameDisplay.textContent = fileInput.files[0].name;
+      fileNameDisplay.textContent = `Total files selected: ${fileInput.files.length}`;
     } else {
       fileNameDisplay.textContent = '';
     }
   }
+
 function renderFiles() {
   const folders = getFolders();
   const folder = folders.find(f => f.name === selectedFolder);
   const fileList = document.getElementById('fileList');
-  fileList.innerHTML = ''; // Clear current file list
+  fileList.innerHTML = '';
 
-  if (folder.files.length > 0) {
-    // Add instruction text
-    const instruction = document.createElement('p');
-    instruction.style.fontStyle = 'italic';
-    instruction.style.color = '#555';
-    instruction.textContent = '📄 Click on file to download';
-    fileList.appendChild(instruction);
+  if (!folder || folder.files.length === 0) {
+    fileList.innerHTML = "<i style='color: gray;'>No files uploaded in this folder.</i>";
+    return;
   }
 
-  folder.files.forEach(file => {
-    const fileItem = document.createElement('div');
-    fileItem.classList.add('file-item');
-    fileItem.innerHTML = `
-      <div style="margin-top: 10px;">
-        <b>File Name:</b> <a href="${file.url}" download="${file.name}" style="text-decoration: underline; color: blue;">${file.name}</a><br>
-        <small><strong>Uploaded at:</strong> ${file.uploadTime}</small>
+  // Create scrollable container
+  const container = document.createElement('div');
+  container.id = 'fileListContainer';
+
+  // Instruction
+  const instruction = document.createElement('p');
+  instruction.textContent = 'Your Files';
+  instruction.style.fontStyle = 'italic';
+  instruction.style.color = '#555';
+  container.appendChild(instruction);
+
+  folder.files.forEach((file, index) => {
+    const wrapper = document.createElement('div');
+    wrapper.style.marginBottom = '10px';
+
+    wrapper.innerHTML = `
+      <div style="margin-bottom: 6px;">
+        <b>${index + 1}. 📄 
+          <a href="${file.url}" download="${file.name}" style="color: #3498db; text-decoration: underline;">
+            ${file.name}
+          </a>
+        </b>
       </div>
-      <hr/>
+      <div style="color: #888;">
+        🕒 <strong>Uploaded at:</strong> ${file.uploadTime}
+      </div>
+      <div>
+        <button onclick="deleteFile(${index})"
+          style="margin-top: 5px; background: #e74c3c; border: none; cursor: pointer; font-size: 14px; padding: 6px 10px; border-radius: 6px; color: white;">
+          🗑️ Delete
+        </button>
+      </div>
     `;
-    fileList.appendChild(fileItem); // Add each file item
+
+    container.appendChild(wrapper);
+
+    // Add divider line after each file
+    const divider = document.createElement('hr');
+    divider.style.border = '1px solid #ccc';
+    divider.style.margin = '10px 0';
+    container.appendChild(divider);
   });
+
+  fileList.appendChild(container);
 }
 
-  // Function to delete all files in the folder
+
   function deleteAllFiles() {
     if (!confirm("Are you sure you want to delete all files in this folder?")) return;
-
     const folders = getFolders();
     const folder = folders.find(f => f.name === selectedFolder);
     folder.files = [];
@@ -1370,37 +1633,39 @@ function renderFiles() {
     renderFiles();
   }
 
-  // Function to delete a specific folder
+  function deleteFile(index) {
+    const folders = getFolders();
+    const folder = folders.find(f => f.name === selectedFolder);
+    folder.files.splice(index, 1);
+    saveFolders(folders);
+    renderFiles();
+  }
+
   function deleteFolder(folderName) {
     if (!confirm("Are you sure you want to delete this folder?")) return;
-
     const folders = getFolders();
     const updatedFolders = folders.filter(folder => folder.name !== folderName);
     saveFolders(updatedFolders);
     renderFolders();
   }
 
-  // Function to get folders from local storage
   function getFolders() {
     return JSON.parse(localStorage.getItem('folders') || '[]');
   }
 
-  // Function to save folders to local storage
   function saveFolders(folders) {
     localStorage.setItem('folders', JSON.stringify(folders));
   }
 
-  // Function to open the folder modal
   function openFolderModal() {
     document.getElementById('folderModal').style.display = 'block';
+    renderFolders();
   }
 
-  // Function to close the folder modal
   function closeFolderModal() {
     document.getElementById('folderModal').style.display = 'none';
   }
 
-  // Function to create a new folder
   function createFolder() {
     const name = document.getElementById('folderName').value.trim();
     if (!name) return alert('Folder name required');
@@ -1412,24 +1677,43 @@ function renderFiles() {
     renderFolders();
   }
 
-  // Function to render folders
   function renderFolders() {
     const folders = getFolders();
     const folderList = document.getElementById('folderList');
     folderList.innerHTML = '';
 
     folders.forEach(folder => {
-      const div = document.createElement('div');
-      div.innerHTML = `
-        <b>${folder.name}</b>
-        <button onclick="openUpload('${folder.name}')">Open Folder</button>
-        <button onclick="deleteFolder('${folder.name}')">🗑</button>
-      `;
-      folderList.appendChild(div);
-    });
+  const totalSize = folder.files.reduce((sum, file) => sum + (file.size || 0), 0);
+  const div = document.createElement('div');
+
+  div.innerHTML = `
+    <b><span class="folder-name">📁 ${folder.name}</span></b>
+    <button onclick="showFolderSize('${folder.name}')" style="background-color: #6c5ce7; color: white; padding: 4px 8px; border: none; border-radius: 5px; cursor: pointer;">📏 File Size</button>
+    <div style="margin-top: 5px;">
+      <button class="open-folder-btn" onclick="openUpload('${folder.name}')">📂 Open</button>
+      <button class="delete-folder-btn" onclick="deleteFolder('${folder.name}')" title="Delete Folder">🗑️</button>
+      
+    </div>
+  `;
+  folderList.appendChild(div);
+});
+
   }
 
-  // Function to open the upload modal for a specific folder
+function showFolderSize(folderName) {
+  const folders = getFolders();
+  const folder = folders.find(f => f.name === folderName);
+  const totalSize = folder.files.reduce((sum, file) => sum + (file.size || 0), 0);
+  alert(`📁 Folder: ${folderName}\n📦 Used: ${formatBytes(totalSize)}\nout of unlimited`);
+}
+
+function formatBytes(bytes) {
+  if (bytes === 0) return '0 B';
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
+  return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
+}
+
   function openUpload(folderName) {
     selectedFolder = folderName;
     document.getElementById('uploadFolderTitle').innerText = `Folder: ${folderName}`;
@@ -1437,42 +1721,35 @@ function renderFiles() {
     renderFiles();
   }
 
-  // Function to close the upload modal
   function closeUpload() {
     document.getElementById('uploadModal').style.display = 'none';
   }
 
-  // Function to upload a file to the selected folder
   function uploadToFolder() {
     const fileInput = document.getElementById('uploadFile');
-    const file = fileInput.files[0];
-    if (!file) return alert('No file selected');
-    const url = URL.createObjectURL(file);
+    const files = Array.from(fileInput.files);
+    if (files.length === 0) return alert('No file selected');
     const folders = getFolders();
     const folder = folders.find(f => f.name === selectedFolder);
-    folder.files.push({ name: file.name, url });
+
+    files.forEach(file => {
+      const url = URL.createObjectURL(file);
+      const uploadTime = new Date().toLocaleString();
+      folder.files.unshift({ name: file.name, url, uploadTime, size: file.size });
+    });
+function formatBytes(bytes) {
+  if (bytes === 0) return '0 B';
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
+  return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
+}
+
     saveFolders(folders);
     fileInput.value = '';
+    previewFileName();
     renderFiles();
   }
 
-  // Function to render the files inside the selected folder
-  function renderFiles() {
-    const folders = getFolders();
-    const folder = folders.find(f => f.name === selectedFolder);
-    const fileList = document.getElementById('fileList');
-    fileList.innerHTML = '';
-
-    folder.files.forEach(file => {
-      const link = document.createElement('a');
-      link.href = file.url;
-      link.download = file.name;
-      link.textContent = `📄 ${file.name}`;
-      fileList.appendChild(link);
-    });
-  }
-
-  // Drag to Move functionality for the folder modal
   let isDragging = false, offsetX, offsetY;
   function startDrag(e) {
     const modal = document.getElementById('folderModal');
@@ -1482,72 +1759,26 @@ function renderFiles() {
     document.addEventListener('mousemove', drag);
     document.addEventListener('mouseup', stopDrag);
   }
-  
+
   function drag(e) {
     if (!isDragging) return;
     const modal = document.getElementById('folderModal');
     modal.style.left = `${e.clientX - offsetX}px`;
     modal.style.top = `${e.clientY - offsetY}px`;
   }
-  
+
   function stopDrag() {
     isDragging = false;
     document.removeEventListener('mousemove', drag);
     document.removeEventListener('mouseup', stopDrag);
   }
 
-  // Event listener for the folder modal
   document.getElementById('pageLink').addEventListener('click', () => {
     openFolderModal();
     renderFolders();
   });
 </script>
 
-
-
-<a href="#" class="item-link" id="pageLink" onclick="openIframePopup()">
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="feather feather-hard-drive" viewBox="0 0 24 24">
-    <path d="M22 12H2M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11zM6 16h.01M10 16h.01" />
-  </svg>
-</a>
-
-<script>
-function openIframePopup() {
-  const screenWidth = window.innerWidth;
-  const screenHeight = window.innerHeight;
-
-  const popupWidth = screenWidth * 0.9;  // 90% of screen width
-  const popupHeight = screenHeight * 0.7; // 70% of screen height
-
-  const left = (screenWidth - popupWidth) / 2;
-  const top = (screenHeight - popupHeight) / 2;
-
-  const popup = window.open('', 'iframePopup', `width=${popupWidth},height=${popupHeight},top=${top},left=${left}`);
-
-  popup.document.write(`
-    <html>
-      <head>
-        <title>Task Manager</title>
-        <style>
-          body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-          }
-          iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-          }
-        </style>
-      </head>
-      <body>
-        <iframe src="https://sugam-navation.w3spaces.com/Task-Manager.html" allowfullscreen></iframe>
-      </body>
-    </html>
-  `);
-}
-</script>
 
 
     <a href="#" class="item-link" id="pageLink">
@@ -1948,17 +2179,17 @@ window.onload = function() {
     
     <section class="content-section">
   <div class="section-header-wrapper">
-    <h1 class="section-header">Daily Log - PC</h1>
+    <h1 class="section-header">Sugam's S-Clock</h1>
     <a class="section-header-link">
-      View in folders
+      Sugam Kaistha
     </a>
   </div>
 
   <div class="content-section-line" style="display: flex; flex-direction: column; align-items: center;">
     <iframe 
-      src="https://sugamkaistha1224.github.io/Testing/" 
+      src="https://sugamkaistha1224.github.io/clock/" 
       frameborder="0" 
-      style="width: 100%; height: 90vh; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1);"
+      style="width: 100%; height: 98vh; border-radius: 5px; box-shadow: 0 0 20px rgba(0,0,0,0.1);"
       allowfullscreen>
     </iframe>
   </div>
@@ -2174,37 +2405,127 @@ window.onload = function() {
       <path d="M12 4v16M5 11l7-7 7 7"></path>
     </svg>
     <span>Upload File</span>
+
   </button>
 
   <!-- Delete All Button (Dustbin Icon) -->
-  <button class="delete-all-btn" id="deleteAllBtn">
+<!-- Delete All Button (Dustbin Icon) -->
+
+<button class="delete-all-btn" id="deleteAllBtn">
   <span class="delete-all-text">Delete All</span>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+  <svg class="delete-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+    stroke="black" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
     <path d="M3 6h18M5 6l1 14h12l1-14H5zM9 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
   </svg>
 </button>
+
 <style type="text/css">
 	.delete-all-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.delete-all-text {
-  margin-right: 8px; /* Space between the text and the icon */
-  font-size: 14px;
+  justify-content: center;
+  background-color: #ff4d4d; /* Red background for urgency */
+  color: white;
+  font-size: 18px;
   font-weight: bold;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.3s, transform 0.2s ease;
 }
 
-.delete-all-btn svg {
-  width: 20px;
-  height: 20px;
+.delete-all-btn:hover {
+  background-color: #ff2d2d; /* Darker red on hover */
+  transform: scale(1.05); /* Slight scale effect for interaction */
+}
+
+.delete-all-btn .button-text {
+  position: relative;
+  z-index: 1;
+  transition: color 0.3s ease;
+}
+
+.delete-all-btn::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300%;
+  height: 300%;
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  animation: ripple 1s infinite;
+}
+
+.delete-all-btn:hover .button-text {
+  color: #fff; /* Change text color on hover */
+  animation: text-animation 0.5s ease forwards;
+}
+
+@keyframes ripple {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+}
+
+@keyframes text-animation {
+  0% {
+    letter-spacing: 0;
+    transform: rotate(0deg);
+  }
+  50% {
+    letter-spacing: 5px;
+    transform: rotate(5deg);
+  }
+  100% {
+    letter-spacing: 0;
+    transform: rotate(-5deg);
+  }
 }
 
 </style>
+<script type="text/javascript">
+	document.getElementById('deleteAllBtn').addEventListener('click', function () {
+  const icon = this.querySelector('.delete-icon');
+  icon.style.animation = 'shake 0.4s';
+  setTimeout(() => icon.style.animation = '', 400);
+  
+  // Place your deleteAllFiles() or relevant function call here
+  deleteAllFiles();
+});
 
+</script>
+
+<span id="totalSize">Total Size: 0 MB</span>
+<style type="text/css">
+	.total-size {
+  font-size: 18px;
+  font-weight: bold;
+  color: #4b50dd;
+  background-color: #f4f7ff;
+  padding: 10px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.total-size:hover {
+  background-color: #e0e7ff;
+  color: #1a237e;
+  cursor: pointer;
+  transform: scale(1.05);
+}
+
+</style>
   <!-- Hidden File Input -->
   <input type="file" id="fileInput" style="display: none;" />
 
@@ -2221,7 +2542,7 @@ window.onload = function() {
   const deleteAllBtn = document.getElementById('deleteAllBtn');
   const fileInput = document.getElementById('fileInput');
   const downloadList = document.querySelector('.download-list');
-  const qrCodeDiv = document.getElementById('qrCode');
+  const totalSizeElement = document.getElementById('totalSize');  // Element to display the total size
 
   window.onload = function() {
     const savedFiles = JSON.parse(localStorage.getItem('uploadedFiles')) || [];
@@ -2231,6 +2552,7 @@ window.onload = function() {
       }
       addDownloadItem(fileData.name, fileData.size, fileData.uploadTime, fileData.url, fileData.uploadTime);
     });
+    updateTotalSize(); // Update the total size on page load
   };
 
   uploadBtn.addEventListener('click', () => fileInput.click());
@@ -2246,9 +2568,11 @@ window.onload = function() {
       const expirationTime = currentTime.getTime() + 24 * 60 * 60 * 1000; // 1 day expiration
 
       const uploadedFiles = JSON.parse(localStorage.getItem('uploadedFiles')) || [];
+      const fileSizeMB = (file.size / 1024 / 1024).toFixed(2);
+      
       uploadedFiles.push({
         name: file.name,
-        size: (file.size / 1024 / 1024).toFixed(2),
+        size: fileSizeMB,
         uploadTime: formattedTime,
         expirationTime: expirationTime,
         url: fileURL
@@ -2256,10 +2580,8 @@ window.onload = function() {
 
       localStorage.setItem('uploadedFiles', JSON.stringify(uploadedFiles));
 
-      addDownloadItem(file.name, (file.size / 1024 / 1024).toFixed(2), formattedTime, fileURL, formattedTime);
-
-      // Generate QR code for the file
-      generateQRCode(fileURL);
+      addDownloadItem(file.name, fileSizeMB, formattedTime, fileURL, formattedTime);
+      updateTotalSize(); // Update the total size after the new upload
     }
   });
 
@@ -2267,6 +2589,7 @@ window.onload = function() {
     // Clear localStorage and the download list
     localStorage.removeItem('uploadedFiles');
     downloadList.innerHTML = ''; // Remove all items from the display
+    updateTotalSize(); // Update the size after deletion
   });
 
   function isFileExpired(uploadTime) {
@@ -2299,12 +2622,12 @@ window.onload = function() {
           </svg>
         </div>
         <div class="delete-file-btn">
-    <button onclick="deleteFile('${fileUploadTime}')">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="delete-icon">
-        <path d="M3 6h18M5 6l1 14h12l1-14H5zM9 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-      </svg>
-    </button>
-  </div>
+          <button onclick="deleteFile('${fileUploadTime}')">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="delete-icon">
+              <path d="M3 6h18M5 6l1 14h12l1-14H5zM9 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+          </button>
+        </div>
       </div>
     `;
 
@@ -2326,20 +2649,34 @@ window.onload = function() {
     downloadList.scrollTop = downloadList.scrollHeight;
   }
 
+  // Delete specific file
   function deleteFile(fileUploadTime) {
-    // Remove file from localStorage based on upload time
     const uploadedFiles = JSON.parse(localStorage.getItem('uploadedFiles')) || [];
     const updatedFiles = uploadedFiles.filter(file => file.uploadTime !== fileUploadTime);
     localStorage.setItem('uploadedFiles', JSON.stringify(updatedFiles));
 
-    // Remove the file from the display
     const fileElements = document.querySelectorAll('.download-item-line');
     fileElements.forEach(element => {
       if (element.querySelector('.line-header').textContent === fileUploadTime) {
         element.remove();
       }
     });
+
+    updateTotalSize(); // Update the size after deletion
   }
+
+  // Update the total size of uploaded files
+  function updateTotalSize() {
+    const uploadedFiles = JSON.parse(localStorage.getItem('uploadedFiles')) || [];
+    let totalSize = 0;
+
+    uploadedFiles.forEach(file => {
+      totalSize += parseFloat(file.size);
+    });
+
+    totalSizeElement.textContent = `Total Size: ${totalSize.toFixed(2)} MB`; // Display the total size
+  }
+
 
   function generateQRCode(fileURL) {
     qrcode.toCanvas(qrCodeDiv, fileURL, (error) => {
